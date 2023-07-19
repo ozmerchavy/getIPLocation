@@ -1,0 +1,33 @@
+{
+    "name": "Get Location of all ips on page",
+    "description": "Every mention of an IP on every page you go, would have a small link under, that would take you to the right coords on Google Maps",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "permissions": [
+        "scripting", 
+        "storage", 
+        "activeTab",
+        "tabs"
+        
+
+    ],
+    "background": {
+        "service_worker": "./bg.js"
+        
+    },
+    "host_permissions": [
+        "http://*/",
+        "https://*/"
+      ],
+    "optional_host_permissions": [
+        "*://*/*"
+    ],
+
+    "icons": {
+        "32": "media/icon32.ico",
+        "48": "media/icon48.ico",
+        "64": "media/icon64.ico",
+        "128": "media/icon128.ico",
+        "512": "media/icon512.ico"
+      }
+}
