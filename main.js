@@ -125,24 +125,23 @@ function addTooltip(element, tooltipText) {
 
 
 function addLink(IPElement, link, tooltipText) {
-    const linkElement = document.createElement('a');
-    linkElement.href = link;
-    linkElement.id = "EXTENSIONlink"
-    linkElement.innerText = 'locate IP 🌍>>';
-    linkElement.style.fontSize = 'x-small'; // Use 'x-small' for a smaller font size
-    linkElement.style.marginLeft = '5px'; // Add a margin to separate from the element's content
+  const linkElement = document.createElement('a');
+  linkElement.href = link;
+  linkElement.id = "EXTENSIONlink";
+  linkElement.innerText = 'locate IP 🌍>>';
+  linkElement.style.fontSize = 'x-small';
+  linkElement.style.marginLeft = '5px';
+  linkElement.target = '_blank'; 
 
-    const container = document.createElement('span');
-    container.style.display = 'inline-block';
-    container.style.verticalAlign = 'top'; // Align the link with the top of the element's content
+  const container = document.createElement('span');
+  container.style.display = 'inline-block';
+  container.style.verticalAlign = 'top';
 
-    // Wrap the element's content and the link in the container
-    container.appendChild(IPElement.cloneNode(true));
-    container.appendChild(linkElement);
-    addTooltip(container, tooltipText)
+  container.appendChild(IPElement.cloneNode(true));
+  container.appendChild(linkElement);
+  addTooltip(container, tooltipText)
 
-    // Replace the original element with the container
-    IPElement.parentNode.replaceChild(container, IPElement);
+  IPElement.parentNode.replaceChild(container, IPElement);
 }
 
 
@@ -182,23 +181,20 @@ function scanPage(){
 This will run in each page
 */
 
-
-const maxIntervalsPerClick = 40;
-window.clickInterval = 0
-
-document.addEventListener('click', function() {
-  window.intervalCount = 0;
-
-  clearInterval(clickInterval);
-  window.clickInterval = setInterval(function() {
+function scanFewTimes(timesToRun) {
+  let intervalCount = 0;
+  const clickInterval = setInterval(function() {
     scanPage();
 
     intervalCount++;
-    if (intervalCount >= maxIntervalsPerClick) {
-      clearInterval(window.clickInterval);
+    if (intervalCount >= timesToRun) {
+      clearInterval(clickInterval);
     }
   }, 300);
+}
+
+document.addEventListener('click', function() {
+  scanFewTimes(100);
 });
 
-
-scanPage()
+scanFewTimes(100);
