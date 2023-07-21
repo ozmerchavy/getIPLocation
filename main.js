@@ -58,7 +58,7 @@ async function bgGET(url) {
 async function saveDataToStorage(key, data) {
   return new Promise((resolve, reject) => {
     const expirationDate = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days from now
-    // the bg is gonna clean this cache
+    // one day ill make the bg this cache
     // ((I hope))
 
     const itemToSave = {

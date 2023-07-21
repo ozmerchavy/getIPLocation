@@ -91,7 +91,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
 // Function to clean up expired data
-function cleanUpExpiredData() {
+// cache has expiery date to stay relevant
+function cleanupData() {
+    console.log("time to clean uppp")
     chrome.storage.local.get(null, (result) => {
       const currentTime = Date.now();
       for (const key in result) {
@@ -105,26 +107,20 @@ function cleanUpExpiredData() {
     });
   }
   
-//   // Set up an alarm to trigger the cleanup function once a day
-//   chrome.alarms.create("dailyCleanup", {
-//     periodInMinutes: 24 * 60, // 24 hours
-//   });
+  chrome.runtime.onStartup.addListener(() => {
+    chrome.storage.local.get("lastCleanupDate", (result) => {
+      const lastCleanupDate = result.lastCleanupDate || 0; // Default to 0 if not set previously
+      const today = new Date().toDateString();
   
-//   // Event listener for the alarm
-//   chrome.alarms.onAlarm.addListener((alarm) => {
-//     if (alarm.name === "dailyCleanup") {
-//       cleanUpExpiredData();
-//     }
-//   });
+      if (lastCleanupDate !== today) {
+        cleanupData();
+        chrome.storage.local.set({ lastCleanupDate: today });
+      }
+    });
+  });
   
-//   // Listen for incoming messages from content script or foreground page
-//   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//     if (message.type === "saveData") {
-//       saveDataToStorage(message.key, message.data, sendResponse);
-//       return true; // Indicates that we want to send a response asynchronously
-//     } else if (message.type === "getData") {
-//       getDataFromStorage(message.key, sendResponse);
-//       return true; // Indicates that we want to send a response asynchronously
-//     }
-//   });
+  // Listen for the browser open event (including extension updates and installs)
+  chrome.runtime.onInstalled.addListener((details) => {
+    cleanupData();
+  });
   
