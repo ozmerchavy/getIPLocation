@@ -13,6 +13,7 @@ function formatJSON(jsonObj) {
 
 
 async function bgGET(url) {
+
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(
         {
@@ -52,10 +53,56 @@ async function bgGET(url) {
   }
 
 
+
+// Save data to chrome.storage.local
+async function saveDataToStorage(key, data) {
+  return new Promise((resolve, reject) => {
+    const expirationDate = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days from now
+    // the bg is gonna clean this cache
+    // ((I hope))
+
+    const itemToSave = {
+      data: data,
+      expiresAt: expirationDate,
+    };
+
+    const item = {};
+    item[key] = itemToSave;
+
+    chrome.storage.local.set(item, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve("Data successfully saved!");
+      }
+    });
+  });
+}
+
+
+// Retrieve data from chrome.storage.local using key
+async function getDataFromStorage(key) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(key, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        const data = result[key];
+        resolve(data);
+      }
+    });
+  });
+}
+
+
+
+
   async function getInfo(ip){
-    const y = await bgGET(`http://ip-api.com/json/${ip}`)
+    const y = await getDataFromStorage(ip) || await bgGET(`http://ip-api.com/json/${ip}`)
     let json
-    try { json = JSON.parse(y)}
+    try { json = JSON.parse(y)
+      await saveDataToStorage(ip, y)
+      }
     catch{
         return undefined
     }
@@ -63,6 +110,11 @@ async function bgGET(url) {
 }
 
 
+
+
+//////////////////////////
+/** HTML CSS Functions */
+//////////////////////////
 
   
 function getIPsElementsInPage(){
@@ -193,9 +245,12 @@ document.addEventListener('click', function() {
 });
 
 
-setInterval(()=>{
-  if (window.amountoScan<4){
+
+setInterval(async()=>{
+  if (window.amountoScan<10){
     scanPage()
     window.amountoScan++
   }
-}, 400) 
+}, 500) 
+
+

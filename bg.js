@@ -52,15 +52,40 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
      
 });
 
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {         
-//     if (request.contentScriptQuery == "storeInfo") {
-//         const info = request.info;
-      
-//     }
-//     if (request.contentScriptQuery == "getInfo") {
-//         const key = request.info;
-
-//         }       
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {         
+    if (request.contentScriptQuery == "getdata") {
+        var url = request.url;
+        try{
+            fetch(url)
+            .then(response => response.text())
+            .then(response => sendResponse(response))
+            .catch(error => console.log('Error:', error))
+        return true;
+        }
+        catch{
+            return undefined
+        }
      
-// });
+    }
+    if (request.contentScriptQuery == "postdata") {
+        try{
+            fetch(request.url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+                },
+                body: 'result=' + request.data
+            })
+                .then(response => response.json())
+                .then(response => sendResponse(response))
+                .catch(error => console.log('Error:', error));
+            return true;
+        }
+        catch{
+            return undefined
+        }
+        }       
+     
+});
 
