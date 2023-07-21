@@ -89,3 +89,42 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
      
 });
 
+
+// Function to clean up expired data
+function cleanUpExpiredData() {
+    chrome.storage.local.get(null, (result) => {
+      const currentTime = Date.now();
+      for (const key in result) {
+        if (result.hasOwnProperty(key)) {
+          const item = result[key];
+          if (item.expiresAt && item.expiresAt <= currentTime) {
+            chrome.storage.local.remove(key);
+          }
+        }
+      }
+    });
+  }
+  
+//   // Set up an alarm to trigger the cleanup function once a day
+//   chrome.alarms.create("dailyCleanup", {
+//     periodInMinutes: 24 * 60, // 24 hours
+//   });
+  
+//   // Event listener for the alarm
+//   chrome.alarms.onAlarm.addListener((alarm) => {
+//     if (alarm.name === "dailyCleanup") {
+//       cleanUpExpiredData();
+//     }
+//   });
+  
+//   // Listen for incoming messages from content script or foreground page
+//   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//     if (message.type === "saveData") {
+//       saveDataToStorage(message.key, message.data, sendResponse);
+//       return true; // Indicates that we want to send a response asynchronously
+//     } else if (message.type === "getData") {
+//       getDataFromStorage(message.key, sendResponse);
+//       return true; // Indicates that we want to send a response asynchronously
+//     }
+//   });
+  

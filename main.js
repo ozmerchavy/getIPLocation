@@ -87,7 +87,7 @@ async function getDataFromStorage(key) {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        const data = result[key];
+        const data = result[key]?.data;
         resolve(data);
       }
     });
@@ -104,6 +104,7 @@ async function getDataFromStorage(key) {
       await saveDataToStorage(ip, y)
       }
     catch{
+
         return undefined
     }
     return json
