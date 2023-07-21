@@ -218,7 +218,7 @@ async function handleIPelement(e){
     const lon = info.lon
     const link = `https://www.google.com/maps?q=${lat},${lon}`
     addLink(e,link, formatJSON({country: info.country, region: info.regionName, city: info.city, zipArea: info.zip, 
-      IntenetServiceProvider: info.isp, organization: info.organization}))
+      IntenetServiceProvider: info.isp, organization: info.org}))
     try{window.alreadyHandled.push(e.innerHTML)}
     catch {
       //nvrmind
