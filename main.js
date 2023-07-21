@@ -117,9 +117,12 @@ async function getDataFromStorage(key) {
 /** HTML CSS Functions */
 //////////////////////////
 
-  
+function isIP(string){
+  return (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/g).test(string)
+}
+
 function getIPsElementsInPage(){
-    return [...document.querySelectorAll("*")].filter(x=>(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/g).test(x.innerText))
+    return [...document.querySelectorAll("*")].filter(x=>isIP(x.innerText))
 
 }
 
@@ -203,8 +206,7 @@ function addLink(IPElement, link, tooltipText) {
 
 
 async function handleIPelement(e){
-  const whereTheHellIsThisLink = e.parentElement.parentElement.parentElement.querySelector("#EXTENSIONlink")
-  if (e.parentElement.parentElement.parentElement.querySelector("#EXTENSIONlink")){
+  if (e.parentElement.parentElement.parentElement.querySelector("#EXTENSIONlink") || e.parentElement.parentElement.innerHTML.includes("locate IP")){
     return
   }
     const ip = e.innerText
@@ -215,7 +217,8 @@ async function handleIPelement(e){
     const lat = info.lat
     const lon = info.lon
     const link = `https://www.google.com/maps?q=${lat},${lon}`
-    addLink(e,link, formatJSON({country: info.country, region: info.regionName, city: info.city, zipArea: info.zip, IntenetServiceProvider: info.isp, organization: info.org}))
+    addLink(e,link, formatJSON({country: info.country, region: info.regionName, city: info.city, zipArea: info.zip, 
+      IntenetServiceProvider: info.isp, organization: info.organization}))
     try{window.alreadyHandled.push(e.innerHTML)}
     catch {
       //nvrmind
@@ -253,5 +256,8 @@ setInterval(async()=>{
     window.amountoScan++
   }
 }, 500) 
+
+
+///////////// tests //////////
 
 
