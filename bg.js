@@ -15,28 +15,52 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {    
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {         
     if (request.contentScriptQuery == "getdata") {
         var url = request.url;
-        fetch(url)
+        try{
+            fetch(url)
             .then(response => response.text())
             .then(response => sendResponse(response))
-            .catch()
+            .catch(error => console.log('Error:', error))
         return true;
+        }
+        catch{
+            return undefined
+        }
+     
     }
     if (request.contentScriptQuery == "postdata") {
-        fetch(request.url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: 'result=' + request.data
-        })
-            .then(response => response.json())
-            .then(response => sendResponse(response))
-            .catch(error => console.log('Error:', error));
-        return true;
-    }
+        try{
+            fetch(request.url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+                },
+                body: 'result=' + request.data
+            })
+                .then(response => response.json())
+                .then(response => sendResponse(response))
+                .catch(error => console.log('Error:', error));
+            return true;
+        }
+        catch{
+            return undefined
+        }
+        }       
+     
 });
+
+// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {         
+//     if (request.contentScriptQuery == "storeInfo") {
+//         const info = request.info;
+      
+//     }
+//     if (request.contentScriptQuery == "getInfo") {
+//         const key = request.info;
+
+//         }       
+     
+// });
 

@@ -141,7 +141,9 @@ function addLink(IPElement, link, tooltipText) {
   container.appendChild(linkElement);
   addTooltip(container, tooltipText)
 
-  IPElement.parentNode.replaceChild(container, IPElement);
+  try{IPElement.parentNode.replaceChild(container, IPElement)}
+  catch{ //nvrmind
+  }
 }
 
 
@@ -161,8 +163,10 @@ async function handleIPelement(e){
     const lon = info.lon
     const link = `https://www.google.com/maps?q=${lat},${lon}`
     addLink(e,link, formatJSON({country: info.country, region: info.regionName, city: info.city, zipArea: info.zip, IntenetServiceProvider: info.isp, organization: info.org}))
-    window.alreadyHandled.push(e.innerHTML)
-
+    try{window.alreadyHandled.push(e.innerHTML)}
+    catch {
+      //nvrmind
+    }
 }
 
 
@@ -181,20 +185,17 @@ function scanPage(){
 This will run in each page
 */
 
-function scanFewTimes(timesToRun) {
-  let intervalCount = 0;
-  const clickInterval = setInterval(function() {
-    scanPage();
 
-    intervalCount++;
-    if (intervalCount >= timesToRun) {
-      clearInterval(clickInterval);
-    }
-  }, 300);
-}
+window.amountoScan = 0
 
 document.addEventListener('click', function() {
-  scanFewTimes(100);
+  window.amountoScan = 0
 });
 
-scanFewTimes(100);
+
+setInterval(()=>{
+  if (window.amountoScan<4){
+    scanPage()
+    window.amountoScan++
+  }
+}, 400) 
