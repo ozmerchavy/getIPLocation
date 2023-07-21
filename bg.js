@@ -93,7 +93,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 // Function to clean up expired data
 // cache has expiery date to stay relevant
 function cleanupData() {
-    console.log("time to clean uppp")
     chrome.storage.local.get(null, (result) => {
       const currentTime = Date.now();
       for (const key in result) {
@@ -117,10 +116,5 @@ function cleanupData() {
         chrome.storage.local.set({ lastCleanupDate: today });
       }
     });
-  });
-  
-  // Listen for the browser open event (including extension updates and installs)
-  chrome.runtime.onInstalled.addListener((details) => {
-    cleanupData();
   });
   
