@@ -117,14 +117,84 @@ async function getDataFromStorage(key) {
 /** HTML CSS Functions */
 //////////////////////////
 
-function isIP(string){
-  return (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/g).test(string)
+
+function wrapEachMatchInSpan(regex, classname, { rootNode = document.body } = {}) {
+  const tagsToIgnore = new Set(["script", "style", "template", "noscript", "iframe", "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr", "textarea"]);
+
+  function iterateTextNodes(node, action) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      node.textContent.trim() && action(node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      if (tagsToIgnore.has(node.tagName.toLowerCase())) {
+        return;
+      }
+      const style = window.getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden") {
+        return;
+      }
+      // process child nodes in reverse order to avoid infinite recursion
+      for (let i = node.childNodes.length - 1; i >= 0; i--) {
+        iterateTextNodes(node.childNodes[i], action);
+      }
+    }
+  }
+
+  function wrapInSpan(textNode, regex, classname) {
+    const parent = textNode.parentNode;
+
+    // if textNode is already wrapped, skip
+    if (parent.classList.contains(classname)) return;
+    
+    const temp = document.createDocumentFragment();
+
+    let lastIndex = 0, match;
+    while ((match = regex.exec(textNode.textContent))) {
+      const matchStart = match.index;
+      const matchEnd = matchStart + match[0].length;
+
+      if (matchStart > lastIndex) {
+        temp.appendChild(
+          document.createTextNode(
+            textNode.textContent.substring(lastIndex, matchStart)
+          )
+        );
+      }
+
+      const span = document.createElement("span");
+      span.className = classname;
+      span.textContent = match[0];
+      span.style.display = 'contents';
+      temp.appendChild(span);
+
+      lastIndex = matchEnd;
+    }
+
+    if (lastIndex < textNode.textContent.length) {
+      temp.appendChild( document.createTextNode(textNode.textContent.substring(lastIndex)) );
+    }
+
+    parent.replaceChild(temp, textNode);
+  }
+
+  iterateTextNodes(rootNode, (textNode) => {
+    wrapInSpan(textNode, regex, classname)
+  });
 }
 
-function getIPsElementsInPage(){
-    return [...document.querySelectorAll("*")].filter(x=>isIP(x.innerText))
 
+
+function getAllIPSandWrapEm(){
+  const IP_regex = /\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g;
+  const IP_classname = 'EXTENSIONIPSpanNoStyleYet';
+  wrapEachMatchInSpan(IP_regex, IP_classname);
+  const spansWrappingIPs = [...document.querySelectorAll(`span.${IP_classname}`)];
+  return spansWrappingIPs
 }
+
+
+
+
+
 
 function addTooltip(element, tooltipText) {
   const style = `
@@ -227,7 +297,7 @@ async function handleIPelement(e){
 
 
 function scanPage(){
-  const allIPsInPage = getIPsElementsInPage()
+  const allIPsInPage = getAllIPSandWrapEm()
   for (const element of allIPsInPage){
       handleIPelement(element)
   }
