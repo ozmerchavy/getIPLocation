@@ -1,6 +1,6 @@
 {
     "name": "IP GeoLinker",
-    "description": "Discover IP addresses mentioned on any webpage with instant tooltips providing valuable information. Perfect for CRM systems, or agents who handle website inquiries.",
+    "description": "Discover IP addresses mentioned on any webpage with instant tooltips providing valuable information.",
     "version": "1.0.0",
     "manifest_version": 3,
     "permissions": [
