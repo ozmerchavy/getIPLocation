@@ -98,7 +98,7 @@ async function getDataFromStorage(key) {
 
 
   async function getInfo(ip){
-    const y = await getDataFromStorage(ip) || await bgGET(`http://ip-api.com/json/${ip}`)
+    const y = await getDataFromStorage(ip) || await bgGET(`https://freeipapi.com/api/json/${ip}`)
     let json
     try { json = JSON.parse(y)
       await saveDataToStorage(ip, y)
@@ -284,11 +284,10 @@ async function handleIPelement(e){
     if (!info){
         return
     }
-    const lat = info.lat
-    const lon = info.lon
+    const lat = info.latitude
+    const lon = info.longitude
     const link = `https://www.google.com/maps?q=${lat},${lon}`
-    addLink(e,link, formatJSON({country: info.country, region: info.regionName, city: info.city, zipArea: info.zip, 
-      IntenetServiceProvider: info.isp, organization: info.org}))
+    addLink(e,link, formatJSON({country: info.countryName, region: info.regionName, city: info.cityName, zipArea: info.zipCode}))
     try{window.alreadyHandled.push(e.innerHTML)}
     catch {
       //nvrmind
