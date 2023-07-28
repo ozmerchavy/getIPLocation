@@ -9,7 +9,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     console.log('running on tab', tab);
 
     chrome.scripting.executeScript({
-      target: { tabId, allFrames: false },
+      target: { tabId },
       files: ['./main.js'],
     });
   }

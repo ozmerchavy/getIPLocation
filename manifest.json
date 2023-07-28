@@ -1,11 +1,11 @@
 {
     "name": "IP GeoLinker",
     "description": "Discover IP addresses mentioned on any webpage with instant tooltips providing valuable information.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "manifest_version": 3,
     "permissions": [
         "scripting", 
-        "storage", 
+        "storage",
         "activeTab",
         "tabs"
         
@@ -22,6 +22,7 @@
     "optional_host_permissions": [
         "*://*/*"
     ],
+  
 
     "icons": {
         "32": "media/icon32.ico",
@@ -30,4 +31,8 @@
         "128": "media/icon128.ico",
         "512": "media/icon512.ico"
       }
+
+
+
+
 }

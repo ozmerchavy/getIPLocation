@@ -121,7 +121,23 @@ async function getDataFromStorage(key) {
 function wrapEachMatchInSpan(regex, classname, { rootNode = document.body } = {}) {
   const tagsToIgnore = new Set(["script", "style", "template", "noscript", "iframe", "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr", "textarea"]);
 
+  function isInputOfSomeSort(node) {
+    return (
+      node.isContentEditable ||
+      node.designMode === 'on' ||
+      (['INPUT', 'TEXTAREA'].includes(node.tagName) ||
+        (['DIV', 'SPAN', 'TD'].includes(node.tagName) && node.hasAttribute('contenteditable')))
+    );
+  }
+
+
+
   function iterateTextNodes(node, action) {
+    if (isInputOfSomeSort(node)){
+      return
+    }
+
+
     if (node.nodeType === Node.TEXT_NODE) {
       node.textContent.trim() && action(node);
     } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -306,27 +322,40 @@ function scanPage(){
 ///////////////////////////////////////////
 //////////////////////////////////////////
 
-/*
-This will run in each page
-*/
 
 
-window.amountoScan = 0
+// dont scan if page in black list
 
-document.addEventListener('click', function() {
-  window.amountoScan = 0
+let y = chrome.storage.sync.get(['EXTENSIONneverUse'],  function (result) {
+  return result
 });
 
 
 
-setInterval(async()=>{
-  if (window.amountoScan<10){
-    scanPage()
-    window.amountoScan++
+
+
+// /*
+// This will run in each page
+// */
+
+
+
+const observer = new MutationObserver((mutationsList, observer) => {
+  const selection = window.getSelection().toString()
+  if  (selection){
+    return // otherwise it doesnt let you select texts
   }
-}, 500) 
+    observer.disconnect(); 
+    scanPage()
+    observer.observe(document.body, {
+      childList: true,
+     subtree: true
+});
+    
 
+});
 
-///////////// tests //////////
-
-
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
